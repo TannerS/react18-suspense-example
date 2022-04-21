@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import {
+  DataTableSkeleton
+} from '@carbon/react';
+import useFetch from "react-hook-usefetch";
+import { useState } from "react";
+import DataTable from "./Datatable/DataTable";
+import {headers} from "./Datatable/Utils";
 
 function App() {
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  setTimeout(() => {
+    setIsLoadingData(false);
+    console.log("data added");
+  }, 5000);
+
+  const {
+    loading,
+    data = [],
+  } = useFetch('https://api.coinstats.app/public/v1/markets?coinId=bitcoin');
+
+  const isLoading = () => (
+    loading || !data.length || isLoadingData
+  );
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isLoading() ? <DataTableSkeleton headers={headers} /> :  <DataTable rows={data} />}
     </div>
   );
 }
